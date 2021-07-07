@@ -1,0 +1,23 @@
+{
+  "name": "browserstack",
+  "version": "1.0.0",
+  "description": "Take home assignment for BrowserStack application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akilduff/BrowserStack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akilduff/BrowserStack/issues"
+  },
+  "homepage": "https://github.com/akilduff/BrowserStack#readme",
+  "dependencies": {
+    "node": "^16.4.0",
+    "selenium-webdriver": "^4.0.0-beta.4"
+  }
+}
