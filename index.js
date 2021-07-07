@@ -88,7 +88,6 @@ async function runTestWithCaps (capabilities) {
       'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "No link to click"}}'
     );
   }
-
   await driver.quit();
 }
 
