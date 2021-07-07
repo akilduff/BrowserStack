@@ -11,7 +11,7 @@ phases:
   #     - node index.js
   post_build:
     commands:
-      - script: node index.js
+      - node index.js
 artifacts:
   files:
     - index.js
