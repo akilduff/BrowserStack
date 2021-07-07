@@ -1,22 +1,15 @@
-# version: 0.2
+version: 0.2
 
-# phases:
-#   install:
-#     commands:
-#         - npm install
-#   # build:
-#   #   commands:
-#   #     - echo Build started on `date`
-#   #     - echo Compiling the Python code...
-#   #     - node index.js
-#   post_build:
-#     commands:
-#       - node index.js
-# artifacts:
-#   files:
-#     - index.js
-#     - package.json
-
-script:
-  - npm install
-  - node index.js
+phases:
+  install:
+    commands:
+        - npm install
+  build:
+    commands:
+      - node index.js
+  post_build:
+    commands:
+      - node index.js
+artifacts:
+  files:
+    - index.js
