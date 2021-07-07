@@ -90,6 +90,7 @@ async function runTestWithCaps (capabilities) {
   }
   await driver.quit();
 }
+
 const capabilities1 = {
   'browserName': 'firefox',
   'browser_version': 'latest',
