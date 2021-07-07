@@ -1,33 +1,63 @@
 const webdriver = require('selenium-webdriver');
-async function runTestWithCaps(capabilities) {
-  let driver;
+const assert = require('assert');
+
+async function runTestWithCaps (capabilities) {
+  let driver = new webdriver.Builder()
+    .usingServer('http://andrewkilduff_Ytnc6z:jMauRf2xtuEUtfgzpzCh@hub-cloud.browserstack.com/wd/hub')
+    .withCapabilities(capabilities)
+    .build();
+  await driver.get("http://www.google.com");
+
+  const inputField = await driver.findElement(webdriver.By.name("q"));
+  await inputField.sendKeys("BrowserStack", webdriver.Key.ENTER); // this submits on desktop browsers
   try {
-    driver = new webdriver.Builder().
-      usingServer('http://andrewkilduff_Ytnc6z:jMauRf2xtuEUtfgzpzCh@hub-cloud.browserstack.com/wd/hub').
-      withCapabilities(capabilities).build();
-    await driver.get('http://www.google.com');
-    const inputField = await driver.findElement(webdriver.By.name("q"));
-    await inputField.sendKeys("BrowserStack", webdriver.Key.ENTER); // this works on desktop browsers
-    try {
-      await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
-    } catch (e) {
-      await inputField.submit(); // this takes care of submit in mobile browsers
-    }
-    const title = await driver.getTitle();
-    console.log(title);
-    // Setting the status of test as 'passed' or 'failed' based on the condition; if title of the web page included 'BrowserStack'
-    if(title.match(/BrowserStack/i)) {
-      await driver.executeScript('browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title contains BrowserStack!"}}');
-    } else {
-      await driver.executeScript('browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Title does not contain BrowserStack!"}}');
-    }
+    await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
   } catch (e) {
-    console.log(e);
-  } finally {
-    if (driver) {
-      await driver.quit();
-    }
+    await inputField.submit(); // this helps in mobile browsers
   }
+
+  // Check to make sure title page contains BrowserStack. No assertions
+  try {
+    await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
+    console.log(await driver.getTitle());
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title contains BrowserStack!"}}'
+    );
+  } catch (e) {
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Page could not load in time"}}'
+    );
+  }
+
+  // First Assertion
+  try {
+    await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
+    const actualTitle = await driver.getTitle();
+    await assert.equal(actualTitle, 'BrowserStack - Google Search')
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title is exactly BrowserStack - Google Search"}}'
+    );
+  } catch (e) {
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Title is NOT exactly BrowserStack - Google Search"}}'
+    );
+  }
+
+  // Second Test
+  try {
+    await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
+    const testLink = await driver.findElement(webdriver.By.xpath(`/html/body/div[7]/div/div[9]/div[1]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div/div/div/div[1]/a/h3`));
+    console.log(testLink);
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Link is BrowserStack: Most Reliable..."}}'
+    );
+  } catch (e) {
+    await driver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Link is NOT BrowserStack: Most Reliable..."}}'
+    );
+  }
+
+  await driver.quit();
 }
 const capabilities1 = {
   'browserName': 'firefox',
@@ -62,8 +92,8 @@ const capabilities4 = {
   'name': 'Parallel test 4'
 }
 const capabilities5 = {
-  'browserName': 'safari',
-  'browser_version': '14',
+  'browserName': 'Chrome',
+  'browser_version': '91',
   'os': 'OS X',
   'os_version': 'Big Sur',
   'build': 'browserstack-build-1',
