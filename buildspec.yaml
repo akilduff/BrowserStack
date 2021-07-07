@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-        - npm install
+        - script: npm install
   # build:
   #   commands:
   #     - echo Build started on `date`
@@ -11,7 +11,7 @@ phases:
   #     - node index.js
   post_build:
     commands:
-      - node index.js
+      - script: node index.js
 artifacts:
   files:
     - index.js
