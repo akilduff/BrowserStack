@@ -46,14 +46,23 @@ async function runTestWithCaps (capabilities) {
   // Second Test
   try {
     await driver.wait(webdriver.until.titleMatches(/BrowserStack/i), 5000);
-    const testLink = await driver.findElement(webdriver.By.xpath(`/html/body/div[7]/div/div[9]/div[1]/div/div[2]/div[2]/div/div/div[1]/div/div/div/div/div/div/div[1]/a/h3`));
-    console.log(testLink);
-    await driver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Link is BrowserStack: Most Reliable..."}}'
-    );
+    const testLink = await driver.findElement(webdriver.By.xpath(`//*[@id="rso"]/div[1]/div/div/div/div/div/div/div[1]/a/h3`));
+    await testLink.click(); // Click on the link
+    try {
+      await driver.wait(webdriver.until.titleMatches(/Most/i), 5000);
+      const linkTitle = await driver.getTitle();
+      await assert.equal(linkTitle, 'Most Reliable App & Cross Browser Testing Platform | BrowserStack')
+      await driver.executeScript(
+        'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Link Title matches BrowserStack homepage"}}'
+      );
+    } catch (e) {
+      await driver.executeScript(
+        'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Link did not load in time"}}'
+      );
+    }
   } catch (e) {
     await driver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Link is NOT BrowserStack: Most Reliable..."}}'
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Link  cannot be found and clicked"}}'
     );
   }
 
